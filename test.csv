@@ -1,2 +1,2 @@
-ФИО String; Дата_рождения Date; Кол-во_проектов Integer; Рейтинг Float; Комментарий String
-Иванов Иван Иванович; 18.06.1983; 34; 6,45; "Работал над проектами: ""АБС""
+FIO String; Data_rozhdenia Date; Kol-vo_proektov Integer; Rating Float; Kommentarii String
+Ivan; 18.06.1983; 34; 6,45; "Work: ""ABC""

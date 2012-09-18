@@ -13,8 +13,6 @@ public class Search_csv {
 			csv.close();
 		} catch (Exception e) {
 			System.out.println( e.getMessage() );
-		} catch (IOException e) {
-			System.out.println( e.getMessage() );
 		}
 	}
 
