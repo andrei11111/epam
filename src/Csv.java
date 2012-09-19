@@ -1,11 +1,14 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 
 public class Csv {
 	private BufferedReader br;
+	public boolean eof = true;
 	HashMap<Integer, String> hm = new HashMap<Integer, String>();
 	String[] headerTypes = {
 			"String",
@@ -36,8 +39,8 @@ public class Csv {
 		}
 	}
 
-	public void open(String file) throws IOException, Exception {
-		br = new BufferedReader(new FileReader(file));
+	public void open(String file, String charset) throws IOException, Exception {
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
 		
 		fillHeader();
 	}
@@ -46,9 +49,18 @@ public class Csv {
 		br.close();
 	}
 	
-	public void get() throws IOException {
-		for (int i = 0; i < hm.size(); i++)
-			System.out.printf("%s ", hm.get(i));
+	public int getLenghtColumns() {
+		return hm.size();
+	}
+	
+	public String[] getLine() throws IOException, Exception {
+		
+		String[] content = br.readLine().split(";");
+		
+		if (content.length != hm.size())
+			throw new Exception("Content is not equals headers");
+		
+		return content;
 	}
 
 }
