@@ -1,13 +1,19 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 
 public class Csv {
-	private BufferedReader br;
+	private BufferedReader br = null;
+	private BufferedWriter bw = null;
 	public boolean eof = true;
 	HashMap<Integer, String> hm = new HashMap<Integer, String>();
 	String[] headerTypes = {
@@ -25,6 +31,14 @@ public class Csv {
 		return false;
 	}
 	
+	public int getIndexColumn(String columnName) {
+		for (int i = 0; i < getLenghtColumns(); i++) 
+			if (columnName.equals(hm.get(i)))
+				return i;
+		
+		return -1;
+	}
+	
 	private void fillHeader() throws Exception {
 		String headString = br.readLine();
 		
@@ -39,14 +53,26 @@ public class Csv {
 		}
 	}
 
-	public void open(String file, String charset) throws IOException, Exception {
-		br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+	public void open(String file, String charset, char mode) throws Exception {
+		switch (mode) {
+			case 'r':
+				br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+				break;
+			case 'w':
+				bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),charset));
+				break;
+			default:
+				throw new Exception("mode hz");
+		}
 		
 		fillHeader();
 	}
 	
 	public void close() throws IOException {
-		br.close();
+		if (br != null)
+			br.close();
+		if (bw != null)
+			bw.close();
 	}
 	
 	public int getLenghtColumns() {
@@ -61,6 +87,10 @@ public class Csv {
 			throw new Exception("Content is not equals headers");
 		
 		return content;
+	}
+	
+	public void write(String[] column) throws IOException {
+		bw.append('c');
 	}
 
 }
