@@ -57,22 +57,22 @@ public class Csv {
 		switch (mode) {
 			case 'r':
 				br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+				fillHeader();
 				break;
 			case 'w':
-				bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),charset));
+				bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
 				break;
 			default:
 				throw new Exception("mode hz");
 		}
-		
-		fillHeader();
 	}
 	
 	public void close() throws IOException {
 		if (br != null)
 			br.close();
-		if (bw != null)
+		if (bw != null) {
 			bw.close();
+		}
 	}
 	
 	public int getLenghtColumns() {
@@ -89,8 +89,22 @@ public class Csv {
 		return content;
 	}
 	
+	private String array2string(String[] arr, String delimiter) {
+		String str = new String();
+		
+		for (int i = 0; i < arr.length; i++) {
+			str = str.concat( arr[i].toString() );
+			
+			if (i < arr.length - 1)
+				str = str.concat(delimiter);
+				
+		}
+		
+		return str;
+	}
+	
 	public void write(String[] column) throws IOException {
-		bw.append('c');
+		bw.write( array2string(column, ";") );
 	}
 
 }
