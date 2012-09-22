@@ -15,14 +15,14 @@ public class Csv {
 	private BufferedReader br = null;
 	private BufferedWriter bw = null;
 	public boolean eof = true;
-	HashMap<Integer, String> hm = new HashMap<Integer, String>();
+	HashMap<Integer, HashMap<String, String>> hm = new HashMap<Integer, HashMap<String, String>>();
 	String[] headerTypes = {
 			"String",
 			"Date",
 			"Integer",
 			"Float"
 	};
-	
+
 	private boolean isExistType(String type) {
 		for (String _type : headerTypes)
 			if (type.equals(_type))
@@ -31,24 +31,18 @@ public class Csv {
 		return false;
 	}
 	
-	public int getIndexColumn(String columnName) {
-		for (int i = 0; i < getLenghtColumns(); i++) 
-			if (columnName.equals(hm.get(i)))
-				return i;
-		
-		return -1;
-	}
-	
 	private void fillHeader() throws Exception {
 		String headString = br.readLine();
 		
 		for (int i = 0; i < headString.split(";").length; i++) {
-			String[] collumn = headString.split(";")[i].trim().split(" ");
+			String[] column = headString.split(";")[i].trim().split(" ");
 			
-			if (!isExistType(collumn[1]))
+			if (!isExistType(column[1]))
 				throw new Exception("type not found");
 			
-			hm.put(i, collumn[0]);
+			HashMap<String, String> ct = new HashMap<String, String>();
+			ct.put(column[0], column[1]);
+			hm.put(i,  ct);
 
 		}
 	}
@@ -80,12 +74,16 @@ public class Csv {
 	}
 	
 	public String[] getLine() throws IOException, Exception {
+		String buf = br.readLine();
+		if (buf == null)
+			return null;
 		
-		String[] content = br.readLine().split(";");
+		String[] content = buf.split(";");
 		
 		if (content.length != hm.size())
 			throw new Exception("Content is not equals headers");
-		
+
+	
 		return content;
 	}
 	
@@ -105,6 +103,14 @@ public class Csv {
 	
 	public void write(String[] column) throws IOException {
 		bw.write( array2string(column, ";") );
+	}
+	
+	public int getIndexColumn(String column) throws Exception {
+		for (int i = 0; i < hm.size(); i++) 
+			if ( hm.get(i).containsKey(column) )
+				return i;
+		
+		throw new Exception("Column undefined");
 	}
 
 }

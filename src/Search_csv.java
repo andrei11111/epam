@@ -8,20 +8,20 @@ public class Search_csv {
 			Arg arg = new Arg(args);
 			Csv csv_r = new Csv();
 			Csv csv_w = new Csv();
-			csv_w.open( arg.getProperty("out"), arg.getProperty("enc"), 'w');
+			
 			csv_r.open( arg.getProperty("in"), arg.getProperty("enc"), 'r' );
+			csv_w.open( arg.getProperty("out"), arg.getProperty("enc"), 'w');
 			
 			String[] content = new String[ csv_r.getLenghtColumns() ];
-			String buf = null;
-
-		
-			//while ( (buf = csv_r.getLine()[0]) != null) 
+			int indexSearchColumn = csv_r.getIndexColumn( arg.getProperty("col") );
+			String searchExp = arg.getProperty("exp");
+			
+			while ((content = csv_r.getLine()) != null) {
+				if (content[indexSearchColumn].equals(searchExp))
+					csv_w.write(content);
+			}
 			
 			csv_r.close();
-	
-			csv_w.open( arg.getProperty("out"), arg.getProperty("enc"), 'w');
-			String[] column = { "a", "b", "c"};
-			csv_w.write(column);
 			csv_w.close();
 			
 		} catch (Exception e) {
