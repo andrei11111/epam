@@ -1,2 +1,2 @@
-FIO String; Data_rozhdenia Date; Kol-vo_proektov Integer; Rating Float; Kommentarii String
-Ivan; 18.06.1983; 34; 6,45; "Work: ""ABC""
+name String;age Integer
+""a"sasd.,";12

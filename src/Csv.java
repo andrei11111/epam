@@ -9,19 +9,32 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import sun.misc.Regexp;
 
 
 public class Csv {
 	private BufferedReader br = null;
 	private BufferedWriter bw = null;
 	public boolean eof = true;
-	HashMap<Integer, HashMap<String, String>> hm = new HashMap<Integer, HashMap<String, String>>();
+	HashMap<Integer, String[]> hm = new HashMap<Integer, String[]>();
 	String[] headerTypes = {
 			"String",
 			"Date",
 			"Integer",
 			"Float"
 	};
+	
+	HashMap<String, String> regExp = new HashMap<String, String>();
+	
+	public Csv() {
+		regExp.put("Float", "(\\d+)(\\.)(\\d*)");
+		regExp.put("Integer", "(\\d+)");
+		regExp.put("Date", "(\\d{2}).(\\d{2}).(\\d{4})");
+		regExp.put("String", "(\")[a-zA-Z0-9\"\\;\\.\\/\\,\\?\\!]+(\")");
+	}
 
 	private boolean isExistType(String type) {
 		for (String _type : headerTypes)
@@ -39,9 +52,8 @@ public class Csv {
 			
 			if (!isExistType(column[1]))
 				throw new Exception("type not found");
-			
-			HashMap<String, String> ct = new HashMap<String, String>();
-			ct.put(column[0], column[1]);
+
+			String[] ct = { column[0], column[1] };
 			hm.put(i,  ct);
 
 		}
@@ -73,12 +85,26 @@ public class Csv {
 		return hm.size();
 	}
 	
+	private boolean checkValue(String value, String type) {
+		Pattern pattern = Pattern.compile( regExp.get(type) );
+		Matcher matcher = pattern.matcher(value);
+		
+		
+		return matcher.matches();
+	}
+	
 	public String[] getLine() throws IOException, Exception {
 		String buf = br.readLine();
 		if (buf == null)
 			return null;
 		
 		String[] content = buf.split(";");
+		
+
+		for (int i = 0; i < content.length; i++)
+			if (!checkValue(content[i], hm.get(i)[1]))
+				throw new Exception("!");
+				
 		
 		if (content.length != hm.size())
 			throw new Exception("Content is not equals headers");
@@ -107,7 +133,7 @@ public class Csv {
 	
 	public int getIndexColumn(String column) throws Exception {
 		for (int i = 0; i < hm.size(); i++) 
-			if ( hm.get(i).containsKey(column) )
+			if ( hm.get(i)[0].equals(column) )
 				return i;
 		
 		throw new Exception("Column undefined");
